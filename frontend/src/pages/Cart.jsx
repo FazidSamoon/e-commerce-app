@@ -4,13 +4,16 @@ import { useSelector } from "react-redux";
 import StripeCheckout from "react-stripe-checkout";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from "react-router-dom";
 const key = process.env.REACT_APP_STRIPE;
 
 const Cart = () => {
   const cart = useSelector((state) => state.cart);
+  const user = useSelector((state) => state.user);
+  const [address , setAddress] = useState()
+  const accessToken = user.currentUser.token.toString();
   const [stripeToken, setStripeToken] = useState(null);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const onToken = (token) => {
     setStripeToken(token);
@@ -29,16 +32,35 @@ const Cart = () => {
             amount: 500,
           }
         );
-          navigate("/success")
-        console.log("response ", response);
+        const {city , country , line1} = response.data.billing_details.address
+        const address = line1 + " "  + city + " " + country
+        setAddress(address)
       } catch (err) {
         console.log(err);
       }
     };
-    makePayment();
-  }, [stripeToken]);
+    makePayment().then(async () => {
+      try {
+        const cartBody = {
+          userID: user.currentUser._id,
+          products: cart.products,
+          amount: cart.total,  
+          address: address,
+        };
 
-  console.log(stripeToken);
+        const createOrder = await axios.post(
+          "http://localhost:5000/api/v1/order", cartBody ,
+          {
+            headers: { "authorization": `Bearer ${accessToken}`},
+          }
+        );
+
+        navigate("/");
+      } catch (err) {
+        console.log(err);
+      }
+    });
+  }, [stripeToken]);
 
   return (
     <div className="p-5">

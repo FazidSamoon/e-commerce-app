@@ -12,4 +12,4 @@ orderRouter.put("/:id" , verifyAccessToken , verifyAdmin , updateOrder)
 orderRouter.delete("/:id" , verifyAccessToken , verifyAdmin , deleteOrder)
 
 
-export default orderRouter
+export default orderRouter 

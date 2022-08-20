@@ -6,13 +6,13 @@ export const verifyAccessToken = (req, res, next) => {
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     throw new unauthorizedAccess("Not authorized...");
   }
-  const token = authHeader.split(" ")[1];
-  const decodeUser = verifyToken(token);
+  const token = authHeader.split(" ")[1]; 
+  const decodeUser = verifyToken(token); 
   if (!decodeUser) {
     throw new unauthorizedAccess("Not authorized...");
-  }
+  } 
   req.user = decodeUser;
-  next();
+  next(); 
 };
 
 export const verifyAdmin = (req, res, next) => {
