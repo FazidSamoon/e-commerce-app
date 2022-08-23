@@ -12,9 +12,10 @@ import { useMemo } from "react";
 import { useEffect } from "react";
 import axios from 'axios'
 
-const Chart = ({ aspect, title }) => {
-  const [userStats, setUserStats] = useState([]);
-  const token = JSON.parse(JSON.parse(localStorage.getItem("persist:root")).user).currentUser.token
+const CustomProductsAndUser = ({ aspect, title , url }) => {
+  const [stats , setStats] = useState([])
+  const [orders, setOrders] = useState([]);
+  const token = JSON.parse(JSON.parse(localStorage.getItem("persist:root")).user).currentUser.token;
   const MONTHS = useMemo(() => [
     "JAN",
     "FEB",
@@ -30,15 +31,14 @@ const Chart = ({ aspect, title }) => {
     "DEC",
   ],[]);
 
-  useEffect(()=> {
-    const getStats = async() => {
+  useEffect(() => {
+    const getOrders = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/v1/order/stats" , {
-          headers : {authorization : `Bearer ${token}`}
-        })
-
+        const response = await axios.get(`${url}` , {
+          headers: { authorization: `Bearer ${token}` },
+        });
         response.data.map((item) => {
-          setUserStats((prev) => [
+          setStats((prev) => [
             ...prev,
             {name: MONTHS[item._id - 1], "Total" : item.total}
           ])
@@ -46,9 +46,9 @@ const Chart = ({ aspect, title }) => {
       } catch (error) {
         console.log(error);
       }
-    }
-    getStats()
-  },[])
+    };
+    getOrders();
+  }, []);
 
   return (
     <div className="chart">
@@ -57,7 +57,7 @@ const Chart = ({ aspect, title }) => {
         <AreaChart
           width={730}
           height={250}
-          data={userStats}
+          data={stats}
           margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
         >
           <defs>
@@ -82,4 +82,4 @@ const Chart = ({ aspect, title }) => {
   );
 };
 
-export default Chart;
+export default CustomProductsAndUser;

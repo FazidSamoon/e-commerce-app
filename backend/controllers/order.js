@@ -26,7 +26,7 @@ export const getOrderById = async (req, res) => {
   } catch (error) {
     res.status(404).json({ message: "something went wrong", error: error });
   }
-};
+}; 
 
 export const updateOrder = async (req, res) => {
   const { id } = req.params;
@@ -57,12 +57,15 @@ export const deleteOrder = async (req, res) => {
 };
 
 export const getStats = async (req, res) => {
+  const productID = req.query.pid
   const date = new Date();
   const lastMonth = new Date(date.setMonth(date.getMonth() - 1));
   const prevMonth = new Date(new Date().setMonth(lastMonth.getMonth() - 1));
   try {
     const income = await OrderModel.aggregate([
-      {$match: {createdAt: { $gte: prevMonth }}},
+      {$match: {createdAt: { $gte: prevMonth }, ...(productID && {
+        products:{$elemMatch:{productID}}
+      })}},
       {
         $project: {
           month: { $month: "$createdAt" },

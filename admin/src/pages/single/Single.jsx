@@ -3,8 +3,18 @@ import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
 import Chart from "../../components/chart/Chart";
 import List from "../../components/table/OrderWidget";
+import { useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const Single = () => {
+  const location = useLocation()
+  const userID = location.pathname.split("/")[2]
+  const client = useSelector((state) => {
+    console.log(state.client.clients.find((user) => user._id === userID));
+    state.client.clients.find((user) => user._id === userID)
+  })
+
+  console.log(client);
   return (
     <div className="single">
       <Sidebar />
@@ -16,12 +26,12 @@ const Single = () => {
             <h1 className="title">Information</h1>
             <div className="item">
               <img
-                src="https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260"
-                alt=""
+                src={"https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png"}
+                alt="avatar"
                 className="itemImg"
               />
               <div className="details">
-                <h1 className="itemTitle">Jane Doe</h1>
+                <h1 className="itemTitle">{client.name}</h1>
                 <div className="detailItem">
                   <span className="itemKey">Email:</span>
                   <span className="itemValue">janedoe@gmail.com</span>
